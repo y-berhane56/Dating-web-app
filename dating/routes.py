@@ -117,9 +117,6 @@ def edit_profile():
         form.email.data = current_user.email
         form.city.data = current_user.city
         form.phone.data = current_user.phone
-
-        next_page = request.args.get('next')
-        return redirect(next_page) if next_page else redirect(url_for('account'))
         flash('Your photo has been uploaded! It is now your profile pic', 'success')
     image_file = url_for('static', filename='profilepics/' + current_user.image_file)
     return render_template('profileform.html', title='Edit Profile', form=form, image_file=image_file)
