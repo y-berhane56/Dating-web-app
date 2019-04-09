@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Add Interests</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.book_genres.label }}<br>
+            {{ form.book_genres(size=32) }}<br>
+            {% for error in form.book_genres.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.movie_genres.label }}<br>
+            {{ form.movie_genres(cols=50, rows=4) }}<br>
+            {% for error in form.movie_genres.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.music_genre.label }}<br>
+            {{ form.music_genre(size=32) }}<br>
+            {% for error in form.music_genre.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.food_habit.label }}<br>
+            {{ form.food_habit(size=32) }}<br>
+            {% for error in form.food_habit.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.fav_cuisine.label }}<br>
+            {{ form.fav_cuisine(size=32) }}<br>
+            {% for error in form.fav_cuisine.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.hobby.label }}<br>
+            {{ form.hobby(size=32) }}<br>
+            {% for error in form.hobby.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.outdoors.label }}<br>
+            {{ form.outdoors(size=32) }}<br>
+            {% for error in form.outdoors.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.religion.label }}<br>
+            {{ form.religion(size=32) }}<br>
+            {% for error in form.religion.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>{{ form.submit() }}</p>
+      <div>
+    </form>
+    </div>
+{% endblock %}

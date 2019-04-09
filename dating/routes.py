@@ -3,17 +3,9 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from dating import app, db, bcrypt
-from dating.forms import RegistrationForm, LoginForm, EditProfileForm
+from dating.forms import RegistrationForm, LoginForm, EditProfileForm, InterestForm
 from dating.models import *
 from flask_login import login_user, current_user, logout_user, login_required
-
-cards = [
-{ 'name': 'Daenerys Targaryen', 'age': '18', 'interest': 'reading'},
-{ 'name': 'Jon Snow', 'age': '22'},
-{ 'name': 'Tyrion Lannister', 'age': '24'},
-{ 'name': 'Missandei', 'age': '22'},
-{ 'name': 'Podrick Payne', 'age' : '18'}
-]
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -34,7 +26,7 @@ def index():
 @login_required
 def home():
     users_stack = User.query.all()
-    return render_template('home.html', cards = cards, users_stack = users_stack)
+    return render_template('home.html', users_stack = users_stack)
 
 @app.route("/about")
 @login_required
@@ -120,3 +112,38 @@ def edit_profile():
         flash('Your photo has been uploaded! It is now your profile pic', 'success')
     image_file = url_for('static', filename='profilepics/' + current_user.image_file)
     return render_template('profileform.html', title='Edit Profile', form=form, image_file=image_file)
+
+@app.route('/add_interests', methods=['GET', 'POST'])
+@login_required
+def add_interests():
+    form = InterestForm()
+    if form.validate_on_submit():
+        current_user.book_genres = form.book_genres.data
+        current_user.movie_genres = form.movie_genres.data
+        current_user.music_genre = form.music_genre.data
+        current_user.food_habit = form.food_habit.data
+        current_user.fav_cuisine = form.fav_cuisine.data
+        current_user.hobby = form.hobby.data
+        current_user.outdoors = form.outdoors.data
+        current_user.religion = form.religion.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('account'))
+    elif request.method == 'GET':
+        form.book_genres.data = current_user.book_genres
+        form.movie_genres.data = current_user.movie_genres
+        form.music_genre.data = current_user.music_genre
+        form.food_habit.data = current_user.food_habit
+        form.fav_cuisine.data = current_user.fav_cuisine
+        form.hobby.data = current_user.hobby
+        form.outdoors.data = current_user.outdoors
+        form.religion.data = current_user.religion
+
+        all_interests = [all_book_genres(), all_movie_genres(),
+                     all_music_genres(), all_food_habits(),
+                     all_fav_cuisines(), all_hobbies(),
+                     all_political_views(), all_religions(),
+                     all_outdoors()]
+
+
+    return render_template('interestform.html', title='Add Interests', form=form)

@@ -7,8 +7,6 @@ from functools import wraps
 from flask import Flask, render_template, redirect, request, flash, session, g
 import datetime
 
-
-
 def get_user_id(input_email):
 
     """ Queries the users table with email as an argument and
