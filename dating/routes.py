@@ -94,8 +94,19 @@ def logout():
 
 @app.route("/account")
 @login_required
+#Allows a user to view their account profile only if they are logged in
 def account():
     return render_template('account.html', title='Account')
+
+@app.route("/profile/<user>", methods=['GET', 'POST'])
+@login_required
+#Allows a user to view other user's profile page
+def profile():
+    fname = request.args.get('type')
+    user_stack = User.query.all()
+    selected_user=User.query.filter_by(firstname=fname)
+    userid = User.query.filter_by(username=username)
+    return render_template('profile.html', fname=fname, selected_user=selected_user)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -118,8 +129,6 @@ def edit_profile():
         form.city.data = current_user.city
         form.phone.data = current_user.phone
 
-        next_page = request.args.get('next')
-        return redirect(next_page) if next_page else redirect(url_for('account'))
         flash('Your photo has been uploaded! It is now your profile pic', 'success')
     image_file = url_for('static', filename='profilepics/' + current_user.image_file)
     return render_template('profileform.html', title='Edit Profile', form=form, image_file=image_file)
