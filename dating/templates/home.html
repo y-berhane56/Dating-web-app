@@ -11,7 +11,7 @@
             <div class="card-image"><img src="static/profilepics/{{user.image_file}}" width="100%" height="100%"/></div>
           </div>
           <div class="card-footer">
-            <div class="popular-destinations-text"><a class="ml-2" href="{{ url_for('profile', var={{user.firstname}}) }}">{{user.firstname}} {{user.lastname}}</a>, {{user.city}}</div>
+            <div class="popular-destinations-text"><a class="ml-2" href="{{ url_for('profile', user=user.username) }}">{{user.firstname}} {{user.lastname}}</a>, {{user.city}}</div>
           </div>
         </div>
         {% endfor %}

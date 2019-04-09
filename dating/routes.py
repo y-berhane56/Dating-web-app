@@ -7,14 +7,6 @@ from dating.forms import RegistrationForm, LoginForm, EditProfileForm
 from dating.models import *
 from flask_login import login_user, current_user, logout_user, login_required
 
-cards = [
-{ 'name': 'Daenerys Targaryen', 'age': '18', 'interest': 'reading'},
-{ 'name': 'Jon Snow', 'age': '22'},
-{ 'name': 'Tyrion Lannister', 'age': '24'},
-{ 'name': 'Missandei', 'age': '22'},
-{ 'name': 'Podrick Payne', 'age' : '18'}
-]
-
 @app.route("/", methods=['GET', 'POST'])
 def index():
     if current_user.is_authenticated:
@@ -34,7 +26,7 @@ def index():
 @login_required
 def home():
     users_stack = User.query.all()
-    return render_template('home.html', cards = cards, users_stack = users_stack)
+    return render_template('home.html', users_stack = users_stack)
 
 @app.route("/about")
 @login_required
@@ -101,12 +93,10 @@ def account():
 @app.route("/profile/<user>", methods=['GET', 'POST'])
 @login_required
 #Allows a user to view other user's profile page
-def profile():
-    fname = request.args.get('type')
-    user_stack = User.query.all()
-    selected_user=User.query.filter_by(firstname=fname)
-    userid = User.query.filter_by(username=username)
-    return render_template('profile.html', fname=fname, selected_user=selected_user)
+def profile(user):
+    selected_user=User.query.filter_by(username=user).first()
+    user = selected_user.username
+    return render_template('profile.html', selected_user=selected_user, user=user)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
