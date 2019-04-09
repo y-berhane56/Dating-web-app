@@ -26,7 +26,7 @@ def index():
 @login_required
 def home():
     users_stack = User.query.all()
-    return render_template('home.html', users_stack = users_stack)
+    return render_template('home.html', users_stack=users_stack)
 
 @app.route("/about")
 @login_required
@@ -86,8 +86,17 @@ def logout():
 
 @app.route("/account")
 @login_required
+#Allows a user to view their account profile only if they are logged in
 def account():
     return render_template('account.html', title='Account')
+
+@app.route("/profile/<user>", methods=['GET', 'POST'])
+@login_required
+#Allows a user to view other user's profile page
+def profile(user):
+    selected_user=User.query.filter_by(username=user).first()
+    user = selected_user.username
+    return render_template('profile.html', selected_user=selected_user, user=user)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required

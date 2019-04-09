@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):  #This class defines several fields as class va
     firstname = db.Column(db.String(100), nullable=False)
     lastname = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
-    username = db.Column(db.String(100), nullable=False, unique=True)
+    username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.String(100), nullable=False)
     city = db.Column(db.String(100), nullable=False)
@@ -42,7 +42,7 @@ class Interest(db.Model):
 
     interest_id = db.Column(db.Integer, autoincrement=True,
                             primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     book_genre_id = db.Column(db.Integer,
                             db.ForeignKey('book_genres.book_genre_id'),
                             nullable=False)
@@ -51,9 +51,6 @@ class Interest(db.Model):
                                 nullable=False)
     music_genre_id = db.Column(db.Integer,
                                 db.ForeignKey('music_genres.music_genre_id'),
-                                nullable=False)
-    food_habit_id = db.Column(db.Integer,
-                                db.ForeignKey('food_habits.food_habit_id'),
                                 nullable=False)
     fav_cuisine_id = db.Column(db.Integer,
                                 db.ForeignKey('fav_cuisines.fav_cuisine_id'),
@@ -91,10 +88,10 @@ class UserMatch(db.Model):
     match_id = db.Column(db.Integer, autoincrement=True,
                         primary_key=True)
     user_id_1 = db.Column(db.Integer,
-                        db.ForeignKey('users.user_id'),
+                        db.ForeignKey('users.id'),
                         nullable=False)
     user_id_2 = db.Column(db.Integer,
-                        db.ForeignKey('users.user_id'),
+                        db.ForeignKey('users.id'),
                         nullable=False)
     match_date = db.Column(db.DateTime, nullable=False)
     user_2_status = db.Column(db.Boolean, nullable=False)
@@ -118,7 +115,7 @@ class PendingMatch(db.Model):
 
     user_query_id = db.Column(db.Integer, autoincrement=True,
                             primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'),
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
                             nullable=False)
     query_pin_code = db.Column(db.Integer, nullable=False)
     query_time = db.Column(db.DateTime, nullable=False)
@@ -193,25 +190,6 @@ class MusicGenre(db.Model):
                                                             self.music_genre_name)
 
 
-class FoodHabit(db.Model):
-    """Holds the types of food_habits and their corresponding ids """
-
-    __tablename__ = 'food_habits'
-
-    food_habit_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    food_habit_name= db.Column(db.String(40), nullable=False)
-
-    interest = db.relationship('Interest',
-                            backref=db.backref('food_habit'))
-
-    def __repr__ (self):
-        """displays the ids of food habits and habit names
-        Can be cross-referenced with the interests table"""
-
-        return'<food_habit_id={}, habit_name={}>'.format(self.food_habit_id,
-                                                        self.food_habit_name)
-
-
 class FavCuisine(db.Model):
     """Holds the types of cuisines and thier corresponding ids"""
 
@@ -248,6 +226,7 @@ class Hobby(db.Model):
 
         return'<hobby_id={}, hobby_name={}>'.format(self.hobby_id,
                                                     self.hobby_name)
+
 
 
 class Religion(db.Model):

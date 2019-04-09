@@ -7,19 +7,20 @@
         <div class="media-body">
           <h2 class="account-heading">{{ current_user.firstname }} {{ current_user.lastname}}</h2>
 
-          <ul>
+            <ul>
               <p>{{ current_user.username }}</p>
               <p><b>Birth Day:</b> {{ current_user.date_of_birth }}</p>
               <p><b>Lives in:</b> {{ current_user.city }}</p>
               <p><b>Contact through:</b></p>
               <p style="text-indent: 40px">Email: {{ current_user.email }}</p>
               <p style="text-indent: 40px">Phone: {{ current_user.phone }}</p>
-          </ul>
-          </div>
+            </ul>
+        </div>
         </div>
       </div>
+
       <div class="border-top pt-3">
-          <small class="text-muted">
+          <meduim class="text-muted">
             <a class="ml-2" href="{{ url_for('edit_profile') }}">Edit Profile</a>
             <a class="ml-2" href="{{ url_for('add_interests') }}">Add Interests</a>
           </small>
