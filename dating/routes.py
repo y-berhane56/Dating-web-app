@@ -26,7 +26,7 @@ def index():
 @login_required
 def home():
     users_stack = User.query.all()
-    return render_template('home.html', users_stack = users_stack)
+    return render_template('home.html', users_stack=users_stack)
 
 @app.route("/about")
 @login_required
