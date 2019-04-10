@@ -130,30 +130,31 @@ def add_interests():
     all_interests = [all_book_genres(), all_movie_genres(),all_music_genres(),all_fav_cuisines(),all_hobbies(),
     all_religions(),all_outdoors()]
 
-    book_genre_id = request.form.get('Preferred book genre')
-    movie_genre_id = request.form.get('Preferred movie genre')
-    music_genre_id = request.form.get('Preferred music genre')
-    fav_cuisine_id = request.form.get('Preferred cuisine type')
-    hobby_id = request.form.get('Favorite hobby')
-    outdoor_id = request.form.get('Favorite Outdoor activity')
-    religion_id = request.form.get('Religious ideology')
+    user_id=current_user.id
+    book_genre_id = request.form.get("Preferred book genre")
+    movie_genre_id = request.form.get("Preferred movie genre")
+    music_genre_id = request.form.get("Preferred music genre")
+    fav_cuisine_id = request.form.get("Preferred cuisine type")
+    hobby_id = request.form.get("Favorite hobby")
+    outdoor_id = request.form.get("Favorite Outdoor activity")
+    religion_id = request.form.get("Religious ideology")
 
     #if form.validate_on_submit():
           #update user interests for the specific user
-    interest = Interest(
-        user_id=current_user.id,
-        book_genre_id=book_genre_id,
-        movie_genre_id=movie_genre_id,
-        music_genre_id=music_genre_id,
-        fav_cuisine_id=fav_cuisine_id,
-        hobby_id=hobby_id,
-        outdoor_id=outdoor_id,
-        religion_id=religion_id
-    )
+    #interest = Interest(
+    #    user_id=current_user.id,
+    #    book_genre_id=book_genre_id,
+    #    movie_genre_id=movie_genre_id,
+    #    music_genre_id=music_genre_id,
+    #    fav_cuisine_id=fav_cuisine_id,
+    #    hobby_id=hobby_id,
+    #    outdoor_id=outdoor_id,
+    #    religion_id=religion_id
+    #)
 
-    db.session.add(interest)
-    db.session.commit()
-    flash('Your changes have been saved.')
-    return redirect(url_for('account'))
+    #db.session.add(interest)
+    #db.session.commit()
+    #flash('Your changes have been saved.')
+    #return redirect(url_for('account'))
 
     return render_template('interestform.html', title='Add Interests', all_interests=all_interests)

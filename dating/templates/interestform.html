@@ -3,27 +3,28 @@
 {% block content %}
     <h1>Add Interests</h1>
 
+  <div class="container">
     <div class="row">
-            <div class="col-xs-10 col-xs-offset-1">
-              <div class="panel panel-default" style="padding:20px">
-                <div>
-                  <h2>New User interest Registeration<h2>
-                </div>
-                  {% for sub_interest in all_interests %}
-                    <h4>{{sub_interest[0]}}</h4>
-                    <div class="btn-group"  data-toggle="buttons">
-                      {% for interest in sub_interest[1] %}
-                        <label class="btn btn-reg btn-sm">
-                          <input type="radio" name="{{sub_interest[0]}}" id="{{interest[1]}}" value="{{interest[0]}}" required>
-                          <lable for="{{interest[1]}}">{{ interest[1] }}</label>
-                        </label>
-                      {% endfor %}
-                    </div><!-- end button-grp -->
+      <form action="register" method="POST">
+          <div class="col-xs-10 col-xs-offset-1">
+            <div class="panel panel-default" style="padding:20px">
+              <div>
+                <h2>New User interest Registeration</h2>
+              </div>
+                {% for sub_interest in all_interests %}
+                  <h4>{{sub_interest[0]}}</h4>
+                  <div class="btn-group"  data-toggle="buttons">
+                    {% for interest in sub_interest[1] %}
+                      <label class="btn btn-reg btn-sm">
+                        <input type="radio" name="{{sub_interest[0]}}" id="{{interest[0]}}" value="{{interest[1]}}" required>
+                          <label for="{{interest[1]}}">{{ interest[1] }}</label>
+                      </label>
+                    {% endfor %}
+                  </div><!-- end button-grp -->
                   {% endfor %}
                   <input type = "submit" value="submit" class="btn btn-success btn-lg btn-block">
-                </form>
-              </div> <!-- end panel -->
-            </div> <!-- end col -->
-      </div> <!-- end row -->
+        </form>
+      </div> <!-- end panel -->
+    </div> <!-- end col -->
 
 {% endblock %}
