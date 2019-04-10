@@ -141,20 +141,21 @@ def add_interests():
 
     #if form.validate_on_submit():
           #update user interests for the specific user
-    #interest = Interest(
-    #    user_id=current_user.id,
-    #    book_genre_id=book_genre_id,
-    #    movie_genre_id=movie_genre_id,
-    #    music_genre_id=music_genre_id,
-    #    fav_cuisine_id=fav_cuisine_id,
-    #    hobby_id=hobby_id,
-    #    outdoor_id=outdoor_id,
-    #    religion_id=religion_id
-    #)
+    if request.method == 'Post':
+        interest = Interest(
+            user_id=current_user.id,
+            book_genre_id=book_genre_id,
+            movie_genre_id=movie_genre_id,
+            music_genre_id=music_genre_id,
+            fav_cuisine_id=fav_cuisine_id,
+            hobby_id=hobby_id,
+            outdoor_id=outdoor_id,
+            religion_id=religion_id
+        )
 
-    #db.session.add(interest)
-    #db.session.commit()
+        db.session.add(interest)
+        db.session.commit()
     #flash('Your changes have been saved.')
-    #return redirect(url_for('account'))
+        return redirect(url_for('account'))
 
     return render_template('interestform.html', title='Add Interests', all_interests=all_interests)
