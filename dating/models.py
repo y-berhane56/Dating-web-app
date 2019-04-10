@@ -28,6 +28,8 @@ class User(db.Model, UserMixin):  #This class defines several fields as class va
     phone = db.Column(db.String(100), nullable=False)
     image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
     #profile_picture = db.Column(db.String(250), default = 'default.jpg', nullable=True)
+    interest = db.relationship('Interest', backref=db.backref('User'))
+
 
     def _repr_(self): #The __repr__ method tells Python how to print objects of this class
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
@@ -40,59 +42,35 @@ class Interest(db.Model):
 
     __tablename__ = 'interests'
 
-    interest_id = db.Column(db.Integer, autoincrement=True,
-                            primary_key=True)
+    interest_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    book_genre_id = db.Column(db.Integer,
-                            db.ForeignKey('book_genres.book_genre_id'),
-                            nullable=False)
-    movie_genre_id = db.Column(db.Integer,
-                                db.ForeignKey('movie_genres.movie_genre_id'),
-                                nullable=False)
-    music_genre_id = db.Column(db.Integer,
-                                db.ForeignKey('music_genres.music_genre_id'),
-                                nullable=False)
-    fav_cuisine_id = db.Column(db.Integer,
-                                db.ForeignKey('fav_cuisines.fav_cuisine_id'),
-                                nullable=False)
-    hobby_id = db.Column(db.Integer,
-                        db.ForeignKey('hobbies.hobby_id'), nullable=False)
-    religion_id = db.Column(db.Integer,
-                        db.ForeignKey('religions.religion_id'),
-                        nullable=False)
-    outdoor_id = db.Column(db.Integer,
-                        db.ForeignKey('outdoors.outdoor_id'),
-                        nullable=False)
+    book_genre_id = db.Column(db.Integer,db.ForeignKey('book_genres.book_genre_id'),nullable=False)
+    movie_genre_id = db.Column(db.Integer,db.ForeignKey('movie_genres.movie_genre_id'),nullable=False)
+    music_genre_id = db.Column(db.Integer,db.ForeignKey('music_genres.music_genre_id'),nullable=False)
+    fav_cuisine_id = db.Column(db.Integer,db.ForeignKey('fav_cuisines.fav_cuisine_id'),nullable=False)
+    hobby_id = db.Column(db.Integer,db.ForeignKey('hobbies.hobby_id'), nullable=False)
+    religion_id = db.Column(db.Integer,db.ForeignKey('religions.religion_id'),nullable=False)
+    outdoor_id = db.Column(db.Integer,db.ForeignKey('outdoors.outdoor_id'),nullable=False)
 
     def __repr__ (self):
         """return interest choices of the user"""
 
-        d1 ='< interest_id={a}, book_genre_id={b},'.format(a=self.interest_id,
-                                                        b=self.book_genre_id)
-        d2 =' movie_genre_id={c}, music_genre_id={d},'.format(c=self.movie_genre_id,
-                                                        d=self.music_genre_id)
-        d3 =' food_habit_id={e}, fav_cuisine_id={f},'.format(e=self.food_habit_id,
-                                                        f=self.fav_cuisine_id)
-        d4 =' hobby_id={g}'.format(g=self.hobby_id)
-        d5 =' religion_id={i}, outdoor_id={j}>'.format(i=self.religion_id,
-                                                        j=self.outdoor_id)
+        d1 ='< interest_id={a}, book_genre_id={b},'.format(a=self.interest_id,b=self.book_genre_id)
+        d2 =' movie_genre_id={c}, music_genre_id={d},'.format(c=self.movie_genre_id,d=self.music_genre_id)
+        d3 ='fav_cuisine_id={f},'.format(f=self.fav_cuisine_id)
+        d4 =' hobby_id={g},'.format(g=self.hobby_id)
+        d5 =' religion_id={i}, outdoor_id={j}>'.format(i=self.religion_id,j=self.outdoor_id)
 
         return d1 + d2 + d3 + d4 + d5
-
 
 class UserMatch(db.Model):
     """holds matches made through the history of the app"""
 
     __tablename__ = "user_matches"
 
-    match_id = db.Column(db.Integer, autoincrement=True,
-                        primary_key=True)
-    user_id_1 = db.Column(db.Integer,
-                        db.ForeignKey('users.id'),
-                        nullable=False)
-    user_id_2 = db.Column(db.Integer,
-                        db.ForeignKey('users.id'),
-                        nullable=False)
+    match_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id_1 = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False)
+    user_id_2 = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False)
     match_date = db.Column(db.DateTime, nullable=False)
     user_2_status = db.Column(db.Boolean, nullable=False)
     query_pincode = db.Column(db.String(20), nullable=False)
@@ -100,23 +78,18 @@ class UserMatch(db.Model):
     def __repr__ (self):
         """return interest choices of the user"""
 
-        d1 = '< match_id={a}, user_id_1={b},'.format(a=self.match_id,
-                                                    b=self.user_id_1)
-        d2 =' user_id_2={c}, match_date={d}>'.format(c=self.user_id_2,
-                                                    d=self.match_date)
+        d1 = '< match_id={a}, user_id_1={b},'.format(a=self.match_id, b=self.user_id_1)
+        d2 =' user_id_2={c}, match_date={d}>'.format(c=self.user_id_2, d=self.match_date)
 
         return d1 + d2
-
 
 class PendingMatch(db.Model):
     """holds a list of all pending matches for user queries"""
 
     __tablename__ = "pending_matches"
 
-    user_query_id = db.Column(db.Integer, autoincrement=True,
-                            primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
-                            nullable=False)
+    user_query_id = db.Column(db.Integer, autoincrement=True,primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
     query_pin_code = db.Column(db.Integer, nullable=False)
     query_time = db.Column(db.DateTime, nullable=False)
     pending = db.Column(db.Boolean, nullable=False)
@@ -124,10 +97,8 @@ class PendingMatch(db.Model):
     def __repr__ (self):
         """return information about a user query"""
 
-        d1 = "<user_query_id={a}, user_id={b},".format(a=self.user_query_id,
-                                                        b=self.user_id)
-        d2 = " query_pin_code={c}, query_time={d},".format(c=self.query_pin_code,
-                                                        d=self.query_time)
+        d1 = "<user_query_id={a}, user_id={b},".format(a=self.user_query_id, b=self.user_id)
+        d2 = " query_pin_code={c}, query_time={d},".format(c=self.query_pin_code,d=self.query_time)
         d3 = " pending={e}>".format(e=self.pending)
 
         return d1 + d2 + d3
@@ -140,15 +111,13 @@ class BookGenre(db.Model):
     book_genre_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     book_genre_name = db.Column(db.String(40), nullable=False)
 
-    interest = db.relationship('Interest',
-                            backref=db.backref('book_genre'))
+    interest = db.relationship('Interest',backref=db.backref('book_genre'))
 
     def __repr__ (self):
         """displays the ids of Book genres and book genres
         Can be cross-referenced with the interests table"""
 
-        return'<book_genre_id={}, book_genre_name={}>'.format(self.book_genre_id,
-                                                            self.book_genre_name)
+        return'<book_genre_id={}, book_genre_name={}>'.format(self.book_genre_id, self.book_genre_name)
 
 
 class MovieGenre(db.Model):
@@ -156,19 +125,16 @@ class MovieGenre(db.Model):
 
     __tablename__ = 'movie_genres'
 
-    movie_genre_id= db.Column(db.Integer, autoincrement=True,
-                                            primary_key=True)
+    movie_genre_id= db.Column(db.Integer, autoincrement=True, primary_key=True)
     movie_genre_name = db.Column(db.String(40), nullable=False)
 
-    interest = db.relationship('Interest',
-                            backref=db.backref('movie_genre'))
+    interest = db.relationship('Interest',backref=db.backref('movie_genre'))
 
     def __repr__(self):
         """displays the ids of movies and movie names
         Can be cross-referenced with the interests table"""
 
-        return'<move_genre_id={}, movie_genre_name={}>'.format(self.movie_genre_id,
-                                                            self.movie_genre_name)
+        return'<move_genre_id={}, movie_genre_name={}>'.format(self.movie_genre_id, self.movie_genre_name)
 
 
 class MusicGenre(db.Model):
@@ -179,8 +145,7 @@ class MusicGenre(db.Model):
     music_genre_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     music_genre_name = db.Column(db.String(40), nullable=False)
 
-    interest = db.relationship('Interest',
-                            backref=db.backref('music_genre'))
+    interest = db.relationship('Interest', backref=db.backref('music_genre'))
 
     def __repr__ (self):
         """displays the ids of music genres and music genres
@@ -198,15 +163,13 @@ class FavCuisine(db.Model):
     fav_cuisine_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     fav_cuisine_name= db.Column(db.String(40), nullable=False)
 
-    interest = db.relationship('Interest',
-                            backref=db.backref('fav_cuisine'))
+    interest = db.relationship('Interest', backref=db.backref('fav_cuisine'))
 
     def __repr__ (self):
         """displays the ids of cuisines and cuisine names
         Can be cross-referenced with the interests table"""
 
-        return'<fav_cuisine_id={}, fav_cuisine_name={}>'.format(self.fav_cuisine_id,
-                                                                self.fav_cuisine_name)
+        return'<fav_cuisine_id={}, fav_cuisine_name={}>'.format(self.fav_cuisine_id, self.fav_cuisine_name)
 
 
 class Hobby(db.Model):
@@ -217,16 +180,13 @@ class Hobby(db.Model):
     hobby_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     hobby_name= db.Column(db.String(40), nullable=False)
 
-    interest = db.relationship('Interest',
-                            backref=db.backref('hobby'))
+    interest = db.relationship('Interest', backref=db.backref('hobby'))
 
     def __repr__ (self):
         """displays the ids of hobbies and hobby names
         Can be cross-referenced with the interests table"""
 
-        return'<hobby_id={}, hobby_name={}>'.format(self.hobby_id,
-                                                    self.hobby_name)
-
+        return'<hobby_id={}, hobby_name={}>'.format(self.hobby_id, self.hobby_name)
 
 
 class Religion(db.Model):
@@ -237,15 +197,13 @@ class Religion(db.Model):
     religion_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     religion_name = db.Column(db.String(40), nullable=False)
 
-    interest = db.relationship('Interest',
-                            backref=db.backref('religion'))
+    interest = db.relationship('Interest', backref=db.backref('religion'))
 
     def __repr__ (self):
         """displays the ids of religion and religion names
         Can be cross-referenced with the interests table"""
 
-        return'<religion_id={}, religion_name={}>'.format(self.religion_id,
-                                                        self.religion_name)
+        return'<religion_id={}, religion_name={}>'.format(self.religion_id, self.religion_name)
 
 
 class Outdoor(db.Model):
@@ -256,12 +214,10 @@ class Outdoor(db.Model):
     outdoor_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     outdoor_activity = db.Column(db.String(40), nullable=False)
 
-    interest = db.relationship('Interest',
-                            backref=db.backref('outdoor'))
+    interest = db.relationship('Interest',backref=db.backref('outdoor'))
 
     def __repr__ (self):
         """displays the ids of oa, and oa
         Can be cross-referenced with the interests table"""
 
-        return'<outdoor_id={}, outdoor_activity={}>'.format(self.outdoor_id,
-                                                            self.outdoor_activity)
+        return'<outdoor_id={}, outdoor_activity={}>'.format(self.outdoor_id, self.outdoor_activity)

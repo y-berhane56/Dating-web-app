@@ -6,6 +6,7 @@ from dating import app, db, bcrypt
 from dating.forms import RegistrationForm, LoginForm, EditProfileForm, InterestForm
 from dating.models import *
 from flask_login import login_user, current_user, logout_user, login_required
+from dating.queries import *
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -125,34 +126,34 @@ def edit_profile():
 @app.route('/add_interests', methods=['GET', 'POST'])
 @login_required
 def add_interests():
-    form = InterestForm()
-    if form.validate_on_submit():
-        current_user.book_genres = form.book_genres.data
-        current_user.movie_genres = form.movie_genres.data
-        current_user.music_genre = form.music_genre.data
-        current_user.food_habit = form.food_habit.data
-        current_user.fav_cuisine = form.fav_cuisine.data
-        current_user.hobby = form.hobby.data
-        current_user.outdoors = form.outdoors.data
-        current_user.religion = form.religion.data
-        db.session.commit()
-        flash('Your changes have been saved.')
-        return redirect(url_for('account'))
-    elif request.method == 'GET':
-        form.book_genres.data = current_user.book_genres
-        form.movie_genres.data = current_user.movie_genres
-        form.music_genre.data = current_user.music_genre
-        form.food_habit.data = current_user.food_habit
-        form.fav_cuisine.data = current_user.fav_cuisine
-        form.hobby.data = current_user.hobby
-        form.outdoors.data = current_user.outdoors
-        form.religion.data = current_user.religion
+    #form = InterestForm()
+    all_interests = [all_book_genres(), all_movie_genres(),all_music_genres(),all_fav_cuisines(),all_hobbies(),
+    all_religions(),all_outdoors()]
 
-        all_interests = [all_book_genres(), all_movie_genres(),
-                     all_music_genres(), all_food_habits(),
-                     all_fav_cuisines(), all_hobbies(),
-                     all_political_views(), all_religions(),
-                     all_outdoors()]
+    book_genre_id = request.form.get('Preferred book genre')
+    movie_genre_id = request.form.get('Preferred movie genre')
+    music_genre_id = request.form.get('Preferred music genre')
+    fav_cuisine_id = request.form.get('Preferred cuisine type')
+    hobby_id = request.form.get('Favorite hobby')
+    outdoor_id = request.form.get('Favorite Outdoor activity')
+    religion_id = request.form.get('Religious ideology')
 
+    #if form.validate_on_submit():
+          #update user interests for the specific user
+    interest = Interest(
+        user_id=current_user.id,
+        book_genre_id=book_genre_id,
+        movie_genre_id=movie_genre_id,
+        music_genre_id=music_genre_id,
+        fav_cuisine_id=fav_cuisine_id,
+        hobby_id=hobby_id,
+        outdoor_id=outdoor_id,
+        religion_id=religion_id
+    )
 
-    return render_template('interestform.html', title='Add Interests', form=form)
+    db.session.add(interest)
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('account'))
+
+    return render_template('interestform.html', title='Add Interests', all_interests=all_interests)

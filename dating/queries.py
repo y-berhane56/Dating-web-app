@@ -7,20 +7,16 @@ from functools import wraps
 from flask import Flask, render_template, redirect, request, flash, session, g
 import datetime
 
-def get_user_id(input_email):
 
-    """ Queries the users table with email as an argument and
-        returns the user_id of a user.
-    """
+def get_user_id(input_email):
+    """ Queries the users table with email as an argument and returns the user_id of a user."""
 
     user = User.query.filter(User.email == '{}'.format(input_email)).all()
     user_id = user[0].user_id
     return user_id
 
 def get_user_name(input_id):
-    """ Queries the users table and accepts a userid as input.
-        Returns the fname and lname of the user.
-    """
+    """ Queries the users table and accepts a userid as input. Returns the fname and lname of the user."""
 
     user = User.query.filter(User.user_id == '{}'.format(input_id)).first()
     return ('{}'.format(user.fname), '{}'.format(user.lname))
@@ -44,9 +40,7 @@ def get_user_info(input_id):
     profile_picture = user[0].profile_picture
 
 
-    return [user_id, email, user_name,
-            date_of_birth, zipcode, phone,
-            fname, lname, profile_picture]
+    return [user_id, email, user_name, date_of_birth, zipcode, phone, fname, lname, profile_picture]
 
 
 def get_all_made_matches(user_id):
@@ -105,7 +99,6 @@ def all_movie_genres():
     """ Queries the movie_genres table.Returns a list of tuples, first element is the genre id and second
         element is the name."""
 
-
     movie_genres = MovieGenre.query.all()
     movies = []
 
@@ -117,8 +110,7 @@ def all_movie_genres():
 
 def all_music_genres():
     """ Queries the music_genres table. Returns a list of tuples, first element is the genre id and second
-        element is the name.
-    """
+        element is the name. """
 
     music_genres = MusicGenre.query.all()
     music = []
@@ -131,8 +123,7 @@ def all_music_genres():
 
 def all_fav_cuisines():
     """ Queries the fav_cuisines table. Returns a list of tuples, first element is the cuisine id and second
-        element is the name.
-    """
+        element is the name."""
 
     fav_cuisines = FavCuisine.query.all()
     cuisines = []
@@ -145,8 +136,7 @@ def all_fav_cuisines():
 
 def all_hobbies():
     """ Queries the hobbies table.Returns a list of tuples, first element is the hobby id and second
-        element is the name.
-    """
+        element is the name. """
 
     hobbies = Hobby.query.all()
     hobby = []
@@ -158,8 +148,7 @@ def all_hobbies():
 
 def all_religions():
     """ Queries the religions table. Returns a list of tuples, first element is the religion id and second
-        element is the name.
-    """
+        element is the name."""
 
     religions = Religion.query.all()
     rel = []
@@ -172,31 +161,26 @@ def all_religions():
 
 def all_outdoors():
     """ Queries the outdoors table. Returns a list of tuples, first element is the activity id and second
-        element is the name.
-    """
+        element is the name."""
 
     all_outdoors = Outdoor.query.all()
     activities = []
 
     for out in all_outdoors:
-        activities.append((out.outdoor_id,
-                               out.outdoor_activity))
+        activities.append((out.outdoor_id, out.outdoor_activity))
 
     return ["Favorite Outdoor activity", activities]
 
 def get_user_interests(user_id):
     """ Queries the interests table and accepts a userid as input.
-        Returns an object representing one user interest.
-    """
+        Returns an object representing one user interest. """
 
     user = Interest.query.filter(Interest.user_id == user_id).first()
     return user
 
-
 def get_interest_name(interest_id, table_name):
     """ Queries the interest table, accepts interest_id and name of table as
-        a parameter. Returns an object of interest type.
-    """
+        a parameter. Returns an object of interest type. """
 
     Interest = table_name.query.filter(Interest.user_id == user_id).first()
 
@@ -234,16 +218,14 @@ def get_interest_info(interest_info):
 
 def get_user_match(user_id):
     """ Queries the user_matches table and accepts a user id as input.
-        Returns a list of confirm matches for the specific user.
-    """
+        Returns a list of confirm matches for the specific user."""
 
     q1 = UserMatch.query
     fil = q1.filter(UserMatch.user_id_2 == 339, UserMatch.user_2_status == False).all()
 
 def find_trip_count(user_id):
     """
-        Queries the UserMatch table for a user's matches
-    """
+        Queries the UserMatch table for a user's matches"""
 
     all_matches = UserMatch.query.filter(UserMatch.user_id_1 == user_id).all()
 
@@ -252,8 +234,7 @@ def find_trip_count(user_id):
 def update_matched(user_id1, user_id2, query_time):
     """ Accepts 2 user ids as an input. user_id1 is the logged in user.
         Checks UserMatch table for a pending match.
-        Returns True if a match is made.
-    """
+        Returns True if a match is made."""
 
     time = datetime.datetime.now()
     match = UserMatch.query.filter(UserMatch.user_id_2 == user_id1,
