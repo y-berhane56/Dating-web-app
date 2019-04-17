@@ -3,7 +3,7 @@
 <div class="content-section">
   <div class="media">
     <div>
-      <img src="/static/profilepics/{{current_user.image_file }}">
+      <img src="static/profilepics/{{current_user.image_file }}">
       <div class="media-body">
         <h2 class="account-heading">{{ current_user.firstname }} {{ current_user.lastname}}</h2>
         <!--Divides user information and interests-->
@@ -20,7 +20,7 @@
         </div>
         <div class="column">
           <p style="font-size: 20px"><b>Interest</b></p>
-          <p><b>book: </b>{{ current_user.book_genre_name }}</p>
+          <p><b>book: </b>Romantic Comedy</p>
           <p><b>music: </b>pop </p>
           <p><b>hobby: </b>Swimming, Reading, Chilling</p>
         </div>
@@ -30,10 +30,11 @@
     </div>
 
     <div class="border-top pt-8">
-      <medium class="text-muted">
+      <meduim class="text-muted">
         <a class="ml-2" href="{{ url_for('edit_profile') }}">Edit Profile</a>
-          <a class="ml-2" href="{{ url_for('add_interests') }}">Add Interests</a>
-      </medium>
+        <a class="ml-2" href="{{ url_for('add_interests') }}">Add Interests</a>
+
+      </meduim>
     </div>
 
   </div>
