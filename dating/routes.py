@@ -1,9 +1,9 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, current_app, jsonify
 from dating import app, db, bcrypt
-from dating.forms import RegistrationForm, LoginForm, EditProfileForm
+from dating.forms import RegistrationForm, LoginForm, EditProfileForm, MessageForm
 from dating.models import *
 from flask_login import login_user, current_user, logout_user, login_required
 from dating.queries import *
@@ -30,6 +30,9 @@ def index():
 @login_required
 def home():
     users_stack = User.query.all()
+    exists = db.session.query(db.exists().where(Interest.interest_id == current_user.id)).scalar()
+    if exists==False:
+        return redirect(url_for('add_interests'))
     return render_template('home.html', users_stack=users_stack)
 
 @app.route("/about")
@@ -100,7 +103,36 @@ def logout():
 @login_required
 #Allows a user to view their account profile only if they are logged in
 def account():
-    return render_template('account.html', title='Account')
+
+    selected_interests = []
+
+    user_interests = Interest.query.filter_by(interest_id=current_user.id).first()
+
+    user_book_genre_id = user_interests.book_genre_id
+    user_movie_genre_id = user_interests.movie_genre_id
+    user_music_genre_id = user_interests.music_genre_id
+    user_fav_cuisine_id = user_interests.fav_cuisine_id
+    user_hobby_id = user_interests.hobby_id
+    user_outdoor_id = user_interests.outdoor_id
+    user_religion_id = user_interests.religion_id
+
+    bookname = BookGenre.query.filter_by(book_genre_id=user_book_genre_id).first()
+    moviename = MovieGenre.query.filter_by(movie_genre_id=user_movie_genre_id).first()
+    musicname = MusicGenre.query.filter_by(music_genre_id=user_music_genre_id).first()
+    cuisinename = FavCuisine.query.filter_by(fav_cuisine_id=user_fav_cuisine_id).first()
+    hobbyname = Hobby.query.filter_by(hobby_id=user_hobby_id).first()
+    outdoorname = Outdoor.query.filter_by(outdoor_id=user_outdoor_id).first()
+    religionname = Religion.query.filter_by(religion_id=user_religion_id).first()
+
+    selected_interests.append(bookname.book_genre_name)
+    selected_interests.append(moviename.movie_genre_name)
+    selected_interests.append(musicname.music_genre_name)
+    selected_interests.append(cuisinename.fav_cuisine_name)
+    selected_interests.append(hobbyname.hobby_name)
+    selected_interests.append(outdoorname.outdoor_activity)
+    selected_interests.append(religionname.religion_name)
+
+    return render_template('account.html', title='Account', selected_interests=selected_interests)
 
 @app.route("/profile/<user>", methods=['GET', 'POST'])
 @login_required
@@ -170,6 +202,40 @@ def add_interests():
 
     return render_template('interestform.html', title='Add Interests', all_interests=all_interests)
 
+@app.route('/edit_interests', methods=['GET', 'POST'])
+@login_required
+def edit_interests():
+
+    all_interests = [all_book_genres(), all_movie_genres(),all_music_genres(),all_fav_cuisines(),all_hobbies(),
+    all_religions(),all_outdoors()]
+
+    user_id = current_user.id
+    book_genre_id = request.form.get("Favorite book genre")
+    movie_genre_id = request.form.get("Favorite movie genre")
+    music_genre_id = request.form.get("Favorite music genre")
+    fav_cuisine_id = request.form.get('Preferred cuisine type')
+    hobby_id = request.form.get('Favorite hobby')
+    outdoor_id = request.form.get('Favorite Outdoor activity')
+    religion_id = request.form.get('Religion')
+
+    user_interest = Interest.query.filter_by(interest_id=user_id).first()
+
+    if request.method == 'POST':
+        #find the user interest corresponding to the user_id
+        #edit that interest
+        user_interest.book_genre_id = book_genre_id
+        user_interest.movie_genre_id = movie_genre_id
+        user_interest.music_genre_id = music_genre_id
+        user_interest.fav_cuisine_id = fav_cuisine_id
+        user_interest.hobby_id = hobby_id
+        user_interest.outdoor_id = outdoor_id
+        user_interest.religion_id = religion_id
+
+        db.session.commit()
+        return redirect(url_for('account'))
+
+    return render_template('editinterests.html', title='Edit Interests', all_interests=all_interests)
+
 @app.route('/generate_matches', methods=["GET"])
 @login_required
 def show_generate_matches_form():
@@ -189,6 +255,7 @@ def generate_matches():
     query_time = request.form.get('triptime')
     query_pin_code = request.form.get('pincode')
     user_id = session['user_id']
+    #if this user is in the database for the same exact date, then go to show_matches
     session['query_pincode'] = query_pin_code
     session_time = clean_time(query_time)
     session['query_time'] = session_time
@@ -274,7 +341,6 @@ def update_potential_matches():
     """
 
 
-
     matched = request.form.get("user_match")
     user_id_1 = current_user.id
     match_date = datetime.datetime.now()
@@ -322,3 +388,49 @@ def show_match_details():
 @login_required
 def confirmed():
     return render_template('confirmed.html')
+
+@app.route('/send_message/<recipient>', methods=['GET', 'POST'])
+@login_required
+def send_message(recipient):
+    user = User.query.filter_by(username=recipient).first_or_404()
+    recipient = user
+    form = MessageForm()
+    if form.validate_on_submit():
+        msg = Message(sender=current_user, recipient=user,
+                      body=form.message.data)
+        db.session.add(msg)
+        user.add_notification('unread_message_count', user.new_messages())
+        db.session.commit()
+        flash('Your message has been sent.')
+        return redirect(url_for('show_potential_matches', username=recipient))
+    return render_template('send_message.html', title='Send Message',
+                           form=form, recipient=recipient)
+
+@app.route('/messages')
+@login_required
+def messages():
+    current_user.last_message_read_time = datetime.datetime.utcnow()
+    current_user.add_notification('unread_message_count', 0)
+    db.session.commit()
+    page = request.args.get('page', 1, type=int)
+    messages = current_user.messages_received.order_by(
+        Message.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('messages', page=messages.next_num) \
+        if messages.has_next else None
+    prev_url = url_for('messages', page=messages.prev_num) \
+        if messages.has_prev else None
+    return render_template('messages.html', messages=messages.items,
+                           next_url=next_url, prev_url=prev_url)
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    since = request.args.get('since', 0.0, type=float)
+    notifications = current_user.notifications.filter(
+        Notification.timestamp > since).order_by(Notification.timestamp.asc())
+    return jsonify([{
+        'name': n.name,
+        'data': n.get_data(),
+        'timestamp': n.timestamp
+    } for n in notifications])

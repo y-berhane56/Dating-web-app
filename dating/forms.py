@@ -39,3 +39,7 @@ class EditProfileForm(FlaskForm):
     phone = StringField('Phone (XXX)-(XXX)-(XXXX)', validators=[DataRequired(), Length(min = 10, max = 12)] )
     profilepic = FileField('Add Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Submit')
+
+class MessageForm(FlaskForm):
+    message = TextAreaField('Message', validators=[DataRequired(), Length(min=0, max=250)])
+    submit = SubmitField('Submit')

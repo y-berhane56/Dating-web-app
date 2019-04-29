@@ -1,6 +1,9 @@
 from dating import db, login
+from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import json
+from time import time
 #The purpose of this field is to hold a hash of the user password, which will be used to verify the password entered
 #by the user during the login process. werkzeug is a package that implements password hashing.
 
@@ -27,10 +30,31 @@ class User(db.Model, UserMixin):  #This class defines several fields as class va
     city = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(100), nullable=False)
     image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
+    messages_sent = db.relationship('Message',
+                                    foreign_keys='Message.sender_id',
+                                    backref='sender', lazy='dynamic')
+    messages_received = db.relationship('Message',
+                                        foreign_keys='Message.recipient_id',
+                                        backref='recipient', lazy='dynamic')
+
+    last_message_read_time = db.Column(db.DateTime)
+    notifications = db.relationship('Notification', backref='user',
+                                    lazy='dynamic')
     #profile_picture = db.Column(db.String(250), default = 'default.jpg', nullable=True)
 
     def _repr_(self): #The __repr__ method tells Python how to print objects of this class
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
+
+    def new_messages(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        return Message.query.filter_by(recipient=self).filter(
+            Message.timestamp > last_read_time).count()
+            
+    def add_notification(self, name, data):
+        self.notifications.filter_by(name=name).delete()
+        n = Notification(name=name, payload_json=json.dumps(data), user=self)
+        db.session.add(n)
+        return n
 
 class Interest(db.Model):
     """ User interests and hobbies for matchmaking, Each Column will
@@ -265,3 +289,25 @@ class Outdoor(db.Model):
 
         return'<outdoor_id={}, outdoor_activity={}>'.format(self.outdoor_id,
                                                             self.outdoor_activity)
+
+class Message(db.Model):
+
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return '<Message {}>'.format(self.body)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    timestamp = db.Column(db.Float, index=True, default=time)
+    payload_json = db.Column(db.Text)
+
+    def get_data(self):
+        return json.loads(str(self.payload_json))
