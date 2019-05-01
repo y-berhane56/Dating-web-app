@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<div class="container">
     <h1>Your Messages</h1>
     {% for post in messages %}
         {% include 'messagelayout.html' %}
@@ -19,4 +20,5 @@
             </li>
         </ul>
     </nav>
+  </div>
 {% endblock %}

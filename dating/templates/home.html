@@ -1,9 +1,6 @@
 {% extends "layout.html"%}
 
 {% block content%}
-<div class="section" id="section1">
-   <h3>People around your area</h3>
-</div>
 
   <div class="stage">
     <div id="stacked-cards-block" class="stackedcards stackedcards--animatable init">
@@ -14,7 +11,7 @@
             <div class="card-image"><img src="static/profilepics/{{user.image_file}}" width="100%" height="100%"/></div>
           </div>
           <div class="card-footer">
-            <div class="popular-destinations-text"><a class="ml-2" href="{{ url_for('profile', user=user.username) }}">{{user.firstname}} {{user.lastname}}</a>, {{user.zipcode}}</div>
+            <div class="popular-destinations-text"><a class="ml-2" href="{{ url_for('profile', user=user.username) }}">{{user.firstname}} {{user.lastname}}</a>, {{user.city}}</div>
           </div>
         </div>
         {% endfor %}
@@ -36,7 +33,7 @@
       <div class="left-action"><img src="https://image.ibb.co/heTxf7/20_status_close_3x.png" width="26" height="26"/></div>
       <div class="top-action"><img src="https://image.ibb.co/m1ykYS/rank_army_star_2_3x.png" width="18" height="16"/></div>
       <div class="right-action"><img src="https://image.ibb.co/dCuESn/Path_3x.png" width="30" height="28"/></div>
-  </div>
+    </div>
 </div>
 
 

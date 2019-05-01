@@ -1,4 +1,3 @@
-
 .loginBox{
   position: absolute;
   top: 50%;
@@ -18,10 +17,18 @@
   margin-bottom: 0;
   margin-radius: 0;
   background: transparent;
-  /* background-color: #1a293c; */
+  background-color: #1a293c;
   padding: 1% 0;
   font-size: 1.2em;
   border: 0;
+}
+
+.navbar-inverse .navbar-nav .active a,
+.navbar-inverse .navbar-nav .active a:focus,
+.navbar-inverse .navbar-nav .active a:hover {
+  color: #FFF;
+  background: transparent;
+  /* background-color: #1a293c; */
 }
 
 .navbar-brand {
@@ -35,15 +42,6 @@
   margin-top: -30px;
 }
 
-.navbar-inverse .navbar-nav .active a,
-.navbar-inverse .navbar-nav .active a:focus,
-.navbar-inverse .navbar-nav .active a:hover {
-  color: #FFF;
-  background: transparent;
-  /* background-color: #1a293c; */
-}
-
-
 .carousel-caption {
   top: 50%;
   transform: translateY(-50%);
@@ -53,8 +51,8 @@
 .btn {
   font-size: 18px;
   color: #FFF;
-  /* padding: 12px 18px; */
-  background: #f4b4c0;
+  padding: 12px 18px;
+  background: #b70101;
   border-radius: 22.5px;
 }
 
@@ -65,7 +63,7 @@
 .match-button {
   margin-left: -10px;
   font-size: 14px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .container {
@@ -73,7 +71,7 @@
 }
 
 .profile_picture {
-
+  margin-left: 15px;
 }
 
 
@@ -127,7 +125,7 @@ div.user-menu-btns div.btn-group-horizontal>a.active:after{
   border-left: 0;
   border-bottom: 13px solid transparent;
   border-top: 13px solid transparent;
-  border-left: 10px solid #46D8D2;
+  border-left: 10px solid #000000;
 }
 
 
@@ -196,6 +194,18 @@ div.user-menu div.user-menu-content:not(.active){
     margin-bottom: 0;
 }
 
+.column{
+  text-align: left;
+  margin-top: 25px;
+  margin-left: 60px;
+}
+
+.styling{
+  margin-top: 25px;
+  margin-left: 60px;
+  border: 3px;
+  box-shadow: 1px 1px;
+}
 
 /* base style */
 
