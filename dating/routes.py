@@ -29,37 +29,18 @@ def index():
 @app.route("/home")
 @login_required
 def home():
-    users_stack = User.query.all()
+    users_stack_based_on_zipcode = User.query.filter_by(zipcode=current_user.zipcode).all()
     exists = db.session.query(db.exists().where(Interest.interest_id == current_user.id)).scalar()
     if exists==False:
         return redirect(url_for('add_interests'))
-    return render_template('home.html', users_stack=users_stack)
+
+    return render_template('home.html', users_stack_based_on_zipcode=users_stack_based_on_zipcode)
 
 @app.route("/about")
 @login_required
 def about():
     return render_template('about.html', title='About')
 
-
-def save_picture(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/profilepics', picture_fn)
-
-    output_size = (568, 528)
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-
-    return picture_fn
-
-def clean_time(str_tme):
-    """ Helper function to clean a string that comes from the html date input """
-
-    chars = str_tme.split('T')
-    tm = (" ").join(chars)
-    return tm + ":00"
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -71,7 +52,7 @@ def register():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = User(username=form.username.data, email=form.email.data, password=hashed_password,
                 firstname=form.firstname.data, lastname=form.lastname.data, date_of_birth=form.date_of_birth.data,
-                city=form.city.data, phone=form.phone.data)
+                zipcode=form.zipcode.data, phone=form.phone.data, gender=form.gender.data)
         db.session.add(user)
         db.session.commit()
 
@@ -140,7 +121,38 @@ def account():
 def profile(user):
     selected_user=User.query.filter_by(username=user).first()
     user = selected_user.username
-    return render_template('profile.html', selected_user=selected_user, user=user)
+
+    userid=selected_user.id
+
+    selected_interests = []
+
+    user_interests = Interest.query.filter_by(interest_id=userid).first()
+
+    user_book_genre_id = user_interests.book_genre_id
+    user_movie_genre_id = user_interests.movie_genre_id
+    user_music_genre_id = user_interests.music_genre_id
+    user_fav_cuisine_id = user_interests.fav_cuisine_id
+    user_hobby_id = user_interests.hobby_id
+    user_outdoor_id = user_interests.outdoor_id
+    user_religion_id = user_interests.religion_id
+
+    bookname = BookGenre.query.filter_by(book_genre_id=user_book_genre_id).first()
+    moviename = MovieGenre.query.filter_by(movie_genre_id=user_movie_genre_id).first()
+    musicname = MusicGenre.query.filter_by(music_genre_id=user_music_genre_id).first()
+    cuisinename = FavCuisine.query.filter_by(fav_cuisine_id=user_fav_cuisine_id).first()
+    hobbyname = Hobby.query.filter_by(hobby_id=user_hobby_id).first()
+    outdoorname = Outdoor.query.filter_by(outdoor_id=user_outdoor_id).first()
+    religionname = Religion.query.filter_by(religion_id=user_religion_id).first()
+
+    selected_interests.append(bookname.book_genre_name)
+    selected_interests.append(moviename.movie_genre_name)
+    selected_interests.append(musicname.music_genre_name)
+    selected_interests.append(cuisinename.fav_cuisine_name)
+    selected_interests.append(hobbyname.hobby_name)
+    selected_interests.append(outdoorname.outdoor_activity)
+    selected_interests.append(religionname.religion_name)
+
+    return render_template('profile.html', selected_user=selected_user, user=user, selected_interests=selected_interests)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -152,7 +164,7 @@ def edit_profile():
             current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
-        current_user.city = form.city.data
+        current_user.zipcode = form.zipcode.data
         current_user.phone = form.phone.data
         db.session.commit()
         flash('Your changes have been saved.')
@@ -160,7 +172,7 @@ def edit_profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-        form.city.data = current_user.city
+        form.zipcode.data = current_user.zipcode
         form.phone.data = current_user.phone
         flash('Your photo has been uploaded! It is now your profile pic', 'success')
     image_file = url_for('static', filename='profilepics/' + current_user.image_file)
@@ -235,6 +247,26 @@ def edit_interests():
         return redirect(url_for('account'))
 
     return render_template('editinterests.html', title='Edit Interests', all_interests=all_interests)
+
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profilepics', picture_fn)
+
+    output_size = (568, 528)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
+
+def clean_time(str_tme):
+    """ Helper function to clean a string that comes from the html date input """
+
+    chars = str_tme.split('T')
+    tm = (" ").join(chars)
+    return tm + ":00"
 
 @app.route('/generate_matches', methods=["GET"])
 @login_required
@@ -340,23 +372,28 @@ def update_potential_matches():
         - Updates the user input for a match to the db
     """
 
-
     matched = request.form.get("user_match")
     user_id_1 = current_user.id
     match_date = datetime.datetime.now()
     query_pincode = session['query_pincode']
     session['matched_user'] = matched
 
+    successfulmatch = UserMatch.query.filter_by(user_id_1 = current_user.id).first()
+    if successfulmatch is not None:
+        if successfulmatch.user_id_2 == matched:
+            return redirect(url_for('show_potential_matches'))
+
 
     match = UserMatch(user_id_1=user_id_1,
-                    user_id_2=matched,
-                    match_date=match_date,
-                    user_2_status=False,
-                    query_pincode=query_pincode)
+                        user_id_2=matched,
+                        match_date=match_date,
+                        user_2_status=False,
+                        query_pincode=query_pincode)
 
     db.session.add(match)
     db.session.commit()
-    return redirect('/confirmed')
+
+    return redirect(url_for('confirmed'))
 
 @app.route('/match_console', methods=["POST"])
 @login_required
@@ -388,6 +425,8 @@ def show_match_details():
 @login_required
 def confirmed():
     return render_template('confirmed.html')
+
+
 
 @app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 @login_required

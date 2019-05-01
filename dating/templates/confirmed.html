@@ -1,5 +1,5 @@
-<html>
-<body>
+{% extends "layout.html"%}
+{% block content%}
 <div class="jumbotron text-xs-center">
   <h1 class="display-3">You have confirmed a match</h1>
   <p class="lead"><strong> Return back to list of matches</strong> to see their match details and message them there</p>
@@ -8,5 +8,5 @@
     <a class="btn btn-primary btn-sm" href="/show_matches" role="button">Return to List of Matches</a>
   </p>
 </div>
-</body>
-</html>
+
+{% endblock content %}

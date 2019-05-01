@@ -27,9 +27,11 @@ class User(db.Model, UserMixin):  #This class defines several fields as class va
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.String(100), nullable=False)
-    city = db.Column(db.String(100), nullable=False)
+    gender = db.Column(db.Enum('M', 'F'))
+    zipcode = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(100), nullable=False)
     image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
+
     messages_sent = db.relationship('Message',
                                     foreign_keys='Message.sender_id',
                                     backref='sender', lazy='dynamic')
@@ -49,7 +51,7 @@ class User(db.Model, UserMixin):  #This class defines several fields as class va
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
         return Message.query.filter_by(recipient=self).filter(
             Message.timestamp > last_read_time).count()
-            
+
     def add_notification(self, name, data):
         self.notifications.filter_by(name=name).delete()
         n = Notification(name=name, payload_json=json.dumps(data), user=self)
