@@ -2,10 +2,17 @@
 
 {% block content%}
 
+  <div class="section" id="section1" style="text-align:center">
+     <h3>People around your area</h3>
+     <button class="btn btn-warning btn large match-button" >
+         <a class="nav-item nav-link" href="{{ url_for('show_generate_matches_form') }}">Click Here to Set Up A Date and Look for Matches </a>
+     </button>
+  </div>
+
   <div class="stage">
     <div id="stacked-cards-block" class="stackedcards stackedcards--animatable init">
       <div class="stackedcards-container">
-        {% for user in users_stack_based_on_zipcode %}
+        {% for user in users_stack %}
         <div class="card">
           <div class="card-content">
             <div class="card-image"><img src="static/profilepics/{{user.image_file}}" width="100%" height="100%"/></div>
@@ -35,14 +42,5 @@
       <div class="right-action"><img src="https://image.ibb.co/dCuESn/Path_3x.png" width="30" height="28"/></div>
     </div>
 </div>
-
-
-              <button class="btn btn-default match-button" >
-                <a href="{{ url_for('show_generate_matches_form') }}">Click Here to Set Up A Date and Look for Matches </a>
-              </button>
-
-
-
-
 
 {% endblock content %}
