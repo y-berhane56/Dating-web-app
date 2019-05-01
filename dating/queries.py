@@ -40,7 +40,7 @@ def get_user_info(input_id):
     email = user[0].email
     user_name = user[0].username
     date_of_birth = user[0].date_of_birth
-    zipcode = user[0].city
+    zipcode = user[0].zipcode
     phone = user[0].phone
     fname = user[0].firstname
     lname = user[0].lastname
